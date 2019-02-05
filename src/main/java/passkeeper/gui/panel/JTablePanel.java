@@ -2,6 +2,7 @@ package passkeeper.gui.panel;
 
 import passkeeper.gui.tools.WindowsManager;
 import passkeeper.model.PassKeeperModel;
+import passkeeper.model.PassKeeperService;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -34,7 +35,7 @@ public class JTablePanel extends JPanel {
         setLayout(null);
         setSize(WindowsManager.getWidth(), JTablePanel.HEIGHT);
 
-        final PassKeeperModel passKeeperModel = new PassKeeperModel();
+        final PassKeeperModel passKeeperModel = PassKeeperService.getInstance().getPassKeeperModel();
 
         final JTable table = new JTable(passKeeperModel);
 

@@ -38,7 +38,10 @@ public class MainMenu extends JPanel {
         final JButton newItem = new JButton("New");
         newItem.setToolTipText("New passwords' sheet");
         newItem.setIcon(new ImageIcon("src/resources/icons/new.png"));
-        newItem.addActionListener(e -> {});
+        newItem.addActionListener(e -> {
+            final PassKeeperService passKeeperService = PassKeeperService.getInstance();
+            passKeeperService.getPassKeeperModel().clearModel();
+        });
         newItem.setBounds(10, 10, 100, 40);
 
         final JButton loadItem = new JButton("Load");
@@ -48,7 +51,7 @@ public class MainMenu extends JPanel {
             final File encryptedPasswordFile = FileTools.getFile(this);
             if (FileTools.checkFile(encryptedPasswordFile)) {
                 final PassKeeperService passKeeperService = PassKeeperService.getInstance();
-                passKeeperService.loadPassKeeperObjectList(FileTools.readFileToString(encryptedPasswordFile));
+                passKeeperService.loadPassKeeperObjects(FileTools.readFileToString(encryptedPasswordFile));
             }
 
         });
@@ -61,7 +64,7 @@ public class MainMenu extends JPanel {
             final File encryptedPasswordFile = FileTools.saveFile(this);
             if (FileTools.checkFile(encryptedPasswordFile)) {
                 final PassKeeperService passKeeperService = PassKeeperService.getInstance();
-                FileTools.writeInFile(encryptedPasswordFile, passKeeperService.toString());
+                FileTools.writeInFile(encryptedPasswordFile, passKeeperService.getPassKeeperModelToString());
             }
         });
         saveItem.setBounds(230, 10, 100, 40);

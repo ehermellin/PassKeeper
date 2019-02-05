@@ -7,13 +7,10 @@ public class PassKeeperModel extends AbstractTableModel {
 
     private final String[] columnNames = { "ID", "Login", "Password"};
 
-    private PassKeeperService passKeeperService;
-
     private Vector<PassKeeperObject> passKeeperObjects;
 
-    public PassKeeperModel() {
-        this.passKeeperService = PassKeeperService.getInstance();
-        this.passKeeperObjects = passKeeperService.loadPassKeeperObjectList();
+    public PassKeeperModel(final Vector<PassKeeperObject> passKeeperObjects) {
+        this.passKeeperObjects = passKeeperObjects;
     }
 
     @Override
@@ -96,5 +93,19 @@ public class PassKeeperModel extends AbstractTableModel {
     public void addRow() {
         passKeeperObjects.add(new PassKeeperObject("ID", "Login", "Password"));
         fireTableDataChanged();
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String toString() {
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (PassKeeperObject passKeeperObject : passKeeperObjects) {
+            stringBuilder.append(passKeeperObject.getId()).append("|");
+            stringBuilder.append(passKeeperObject.getLogin()).append("|");
+            stringBuilder.append(passKeeperObject.getPassword()).append("\n");
+        }
+        return stringBuilder.toString();
     }
 }

@@ -12,12 +12,27 @@ public class PassKeeperService {
     /**
      *
      */
-    private Vector<PassKeeperObject> passKeeperObjects;
+    private PassKeeperModel passKeeperModel;
 
     /**
      *
      */
-    private PassKeeperService() {}
+    private Vector<PassKeeperObject> passKeeperObjects;
+
+    /**
+     *
+     * @return
+     */
+    public PassKeeperModel getPassKeeperModel() {
+        return passKeeperModel;
+    }
+
+    /**
+     *
+     */
+    private PassKeeperService() {
+        passKeeperModel = new PassKeeperModel(initPassKeeperObjects());
+    }
 
     /**
      *
@@ -34,25 +49,21 @@ public class PassKeeperService {
      *
      * @return
      */
-    public synchronized Vector<PassKeeperObject> loadPassKeeperObjectList() {
+    public synchronized Vector<PassKeeperObject> initPassKeeperObjects() {
         if (passKeeperObjects != null) {
             return passKeeperObjects;
         } else {
             passKeeperObjects = new Vector<>();
-            addPassKeeperObject("test1","test1", "test1");
-            addPassKeeperObject("test2","test2", "test2");
-            addPassKeeperObject("test3","test3", "test3");
             return passKeeperObjects;
         }
     }
 
     /**
-     *
+     * TODO fusionner avec loadFromString
      * @return
      */
-    public synchronized Vector<PassKeeperObject> loadPassKeeperObjectList(String data) {
+    public synchronized void loadPassKeeperObjects(String data) {
         loadFromString(data);
-        return passKeeperObjects;
     }
 
     /**
@@ -65,25 +76,9 @@ public class PassKeeperService {
 
     /**
      *
-     * @param id
-     * @param login
-     * @param password
-     */
-    private void addPassKeeperObject(final String id, final String login, final String password) {
-        this.passKeeperObjects.add(new PassKeeperObject(id, login, password));
-    }
-
-    /**
-     *
      * @return
      */
-    public String toString() {
-        final StringBuilder stringBuilder = new StringBuilder();
-        for (PassKeeperObject passKeeperObject : passKeeperObjects) {
-            stringBuilder.append(passKeeperObject.getId()).append("|");
-            stringBuilder.append(passKeeperObject.getLogin()).append("|");
-            stringBuilder.append(passKeeperObject.getPassword()).append("\n");
-        }
-        return stringBuilder.toString();
+    public String getPassKeeperModelToString() {
+        return this.passKeeperModel.toString();
     }
 }
