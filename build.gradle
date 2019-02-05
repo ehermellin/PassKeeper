@@ -1,0 +1,83 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+
+version '1.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compile name: 'pgslookandfeel-1.1.2'
+}
+
+jar {
+    baseName = 'pKeeper'
+    version = '0.1'
+    manifest {
+        attributes 'Implementation-Title': 'pKeeper',
+                'Implementation-Version': version,
+                'Gradle-Version':'Gradle 4.8',
+                'Built-By': 'Emmanuel Hermellin',
+                'Main-Class': 'pkeeper.pKeeper'
+    }
+    doFirst {
+        from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+    }
+}
+
+task run (type: JavaExec, dependsOn: build){
+    if (project.hasProperty("Args")) {
+        println("arguments list : " + Args)
+        args(Args.split(','))
+    }
+
+    description = "Run pKeeper"
+    main = "pkeeper.pKeeper"
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+clean{
+    delete 'build', 'out'
+}
+
+checkstyle {
+    toolVersion = "8.9"
+}
+
+checkstyleMain.onlyIf() { project.hasProperty('checkstyle') }
+
+checkstyleMain.doLast() {
+    printCheckstyleVersion()
+}
+
+findbugs {
+    effort= "max"
+    reportLevel = "low"
+    excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
+}
+
+tasks.withType(Jar) {
+    destinationDir = file("$rootDir")
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.8'
+}
+
+def printCheckstyleVersion(){
+    println("Checkstyle version: "+checkstyle.toolVersion)
+}
