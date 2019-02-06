@@ -4,10 +4,10 @@ import passkeeper.gui.tools.FileTools;
 import passkeeper.gui.tools.WindowsManager;
 import passkeeper.model.PassKeeperService;
 
+import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import java.io.File;
 
 /**
  * This class implements the MainMenu class of <code>PassKeeper</code>.

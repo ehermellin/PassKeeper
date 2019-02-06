@@ -1,7 +1,5 @@
 package passkeeper.gui.tools;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.Component;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,6 +10,8 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * This class implements the FileTools class of <code>PassKeeper</code>.

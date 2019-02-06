@@ -21,7 +21,8 @@ public class PassKeeper implements Serializable {
     /**
      * Creates a new main GUI.
      */
-    private PassKeeper(final String[] args) {
+    private PassKeeper() {
+        //TODO Hide/show password, Exception, Cryptage, Filter et LOG
         new MainFrame();
     }
 
@@ -34,6 +35,6 @@ public class PassKeeper implements Serializable {
         PlafOptions.setAsLookAndFeel();
         PlafOptions.updateAllUIs();
 
-        new PassKeeper(args);
+        new PassKeeper();
     }
 }

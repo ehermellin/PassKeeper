@@ -1,42 +1,51 @@
 package passkeeper.model;
 
-import java.util.Vector;
+import java.io.Serializable;
 
-public class PassKeeperService {
+/**
+ * This class implements the PassKeeperService class of <code>PassKeeper</code>.
+ * This is the service used to handle the PassKeeperModel
+ *
+ * @author E. Hermellin
+ * @version 1.0 - 05.02.2019
+ */
+public class PassKeeperService implements Serializable {
 
     /**
-     *
+     * The serial id of the class.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The instance of the service.
      */
     private static PassKeeperService instance;
 
     /**
-     *
+     * The data model.
      */
     private PassKeeperModel passKeeperModel;
 
     /**
+     * Returns the PassKeeperModel.
      *
-     */
-    private Vector<PassKeeperObject> passKeeperObjects;
-
-    /**
-     *
-     * @return
+     * @return the PassKeeperModel.
      */
     public PassKeeperModel getPassKeeperModel() {
         return passKeeperModel;
     }
 
     /**
-     *
+     * Creates a new PassKeeperService.
      */
     private PassKeeperService() {
-        passKeeperModel = new PassKeeperModel(initPassKeeperObjects());
+        passKeeperModel = new PassKeeperModel();
     }
 
     /**
+     * Returns the instance of the PassKeeperService.
      *
-     * @return
+     * @return the instance of the PassKeeperService.
      */
     public static synchronized PassKeeperService getInstance() {
         if (instance == null) {
@@ -46,37 +55,20 @@ public class PassKeeperService {
     }
 
     /**
-     *
-     * @return
+     * Loads the data from a String into the PassKeeperModel.
      */
-    public synchronized Vector<PassKeeperObject> initPassKeeperObjects() {
-        if (passKeeperObjects != null) {
-            return passKeeperObjects;
-        } else {
-            passKeeperObjects = new Vector<>();
-            return passKeeperObjects;
+    public synchronized void loadPassKeeperObjects(String data) {
+        final String[] lines = data.split("\\r?\\n");
+        for (String line : lines) {
+            final String[] args = line.split("\\t");
+            passKeeperModel.addRow(args[0], args[1], args[2]);
         }
     }
 
     /**
-     * TODO fusionner avec loadFromString
-     * @return
-     */
-    public synchronized void loadPassKeeperObjects(String data) {
-        loadFromString(data);
-    }
-
-    /**
+     * Return a String version of the PassKeeperModel.
      *
-     */
-    private void loadFromString(final String data) {
-        passKeeperObjects = new Vector<>();
-        /* addPassKeeperObject()...*/
-    }
-
-    /**
-     *
-     * @return
+     * @return a String version of the PassKeeperModel.
      */
     public String getPassKeeperModelToString() {
         return this.passKeeperModel.toString();
