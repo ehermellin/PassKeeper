@@ -187,9 +187,9 @@ public class PassKeeperModel extends AbstractTableModel {
     public String toString() {
         final StringBuilder stringBuilder = new StringBuilder();
         for (PassKeeperObject passKeeperObject : passKeeperObjects) {
-            stringBuilder.append(passKeeperObject.getId()).append("_");
-            stringBuilder.append(passKeeperObject.getLogin()).append("_");
-            stringBuilder.append(passKeeperObject.getPassword()).append("\\");
+            stringBuilder.append(passKeeperObject.getId()).append(";");
+            stringBuilder.append(passKeeperObject.getLogin()).append(";");
+            stringBuilder.append(passKeeperObject.getPassword()).append("_");
         }
         return stringBuilder.toString();
     }

@@ -22,7 +22,7 @@ public class PassKeeper implements Serializable {
      * Creates a new main GUI.
      */
     private PassKeeper() {
-        //TODO Hide/show password, Exception, Cryptage, Filter et LOG
+        //TODO Hide/show password in pane + add retype your password, Exception, Cryptage
         new MainFrame();
     }
 
