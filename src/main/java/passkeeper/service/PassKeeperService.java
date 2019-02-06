@@ -1,4 +1,6 @@
-package passkeeper.model;
+package passkeeper.service;
+
+import passkeeper.model.PassKeeperModel;
 
 import java.io.Serializable;
 
@@ -58,9 +60,9 @@ public class PassKeeperService implements Serializable {
      * Loads the data from a String into the PassKeeperModel.
      */
     public synchronized void loadPassKeeperObjects(String data) {
-        final String[] lines = data.split("\\r?\\n");
+        final String[] lines = data.split("%");
         for (String line : lines) {
-            final String[] args = line.split("\\t");
+            final String[] args = line.split(";");
             passKeeperModel.addRow(args[0], args[1], args[2]);
         }
     }

@@ -1,8 +1,9 @@
 package passkeeper.gui.panel;
 
+import passkeeper.service.CryptService;
 import passkeeper.gui.tools.FileTools;
 import passkeeper.gui.tools.WindowsManager;
-import passkeeper.model.PassKeeperService;
+import passkeeper.service.PassKeeperService;
 
 import java.io.File;
 import javax.swing.ImageIcon;
@@ -41,6 +42,23 @@ public class MainMenu extends JPanel {
         newItem.addActionListener(e -> {
             final PassKeeperService passKeeperService = PassKeeperService.getInstance();
             passKeeperService.getPassKeeperModel().clearModel();
+
+            String key="ezeon8547";
+            String plain="This is an important message";
+            final CryptService cryptService = CryptService.getInstance();
+            try {
+                File testFile = new File("test");
+                String enc = cryptService.encrypt2(key, plain);
+                FileTools.writeInFile(testFile, enc);
+                System.out.println("Original text: " + plain);
+                System.out.println("Encrypted text: " + enc);
+
+                String plainAfter = cryptService.decrypt2(key, FileTools.readFileToString(testFile));
+                System.out.println("Original text after reading: " + FileTools.readFileToString(testFile));
+                System.out.println("Original text after decryption: " + plainAfter);
+            }catch (Exception exc) {
+                exc.printStackTrace();
+            }
         });
         newItem.setBounds(10, 10, 100, 40);
 
@@ -50,10 +68,20 @@ public class MainMenu extends JPanel {
         loadItem.addActionListener(e -> {
             final File encryptedPasswordFile = FileTools.getFile(this);
             if (FileTools.checkFile(encryptedPasswordFile)) {
-                final PassKeeperService passKeeperService = PassKeeperService.getInstance();
-                passKeeperService.loadPassKeeperObjects(FileTools.readFileToString(encryptedPasswordFile));
+                final CryptService cryptService = CryptService.getInstance();
+                try {
+                    System.out.println("text: " + FileTools.readFileToString(encryptedPasswordFile));
+                    final String decrypted = cryptService.decrypt(cryptService.askPassword(),
+                            FileTools.readFileToString(encryptedPasswordFile));
+                    System.out.println("text: " + decrypted);
+                    if (!decrypted.equals("")) {
+                        final PassKeeperService passKeeperService = PassKeeperService.getInstance();
+                        passKeeperService.loadPassKeeperObjects(decrypted);
+                    }
+                } catch (Exception exc) {
+                    exc.printStackTrace();
+                }
             }
-
         });
         loadItem.setBounds(120, 10, 100, 40);
 
@@ -63,8 +91,17 @@ public class MainMenu extends JPanel {
         saveItem.addActionListener(e -> {
             final File encryptedPasswordFile = FileTools.saveFile(this);
             if (FileTools.checkFile(encryptedPasswordFile)) {
-                final PassKeeperService passKeeperService = PassKeeperService.getInstance();
-                FileTools.writeInFile(encryptedPasswordFile, passKeeperService.getPassKeeperModelToString());
+                final CryptService cryptService = CryptService.getInstance();
+                try {
+                    PassKeeperService passKeeperService = PassKeeperService.getInstance();
+                    System.out.println("text: " + passKeeperService.getPassKeeperModelToString());
+                    final String encrypted = cryptService.encrypt(cryptService.askPassword(),
+                            passKeeperService.getPassKeeperModelToString());
+                    System.out.println("text: " + encrypted);
+                    FileTools.writeInFile(encryptedPasswordFile, encrypted);
+                } catch (Exception exc) {
+                    exc.printStackTrace();
+                }
             }
         });
         saveItem.setBounds(230, 10, 100, 40);

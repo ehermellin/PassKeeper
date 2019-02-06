@@ -35,7 +35,7 @@ public class PassKeeperModel extends AbstractTableModel {
     /**
      * Creates a new PassKeeperModel.
      */
-    PassKeeperModel() {
+    public PassKeeperModel() {
         this.passKeeperObjects = new Vector<>();
     }
 
@@ -187,9 +187,9 @@ public class PassKeeperModel extends AbstractTableModel {
     public String toString() {
         final StringBuilder stringBuilder = new StringBuilder();
         for (PassKeeperObject passKeeperObject : passKeeperObjects) {
-            stringBuilder.append(passKeeperObject.getId()).append("\t");
-            stringBuilder.append(passKeeperObject.getLogin()).append("\t");
-            stringBuilder.append(passKeeperObject.getPassword()).append("\n");
+            stringBuilder.append(passKeeperObject.getId()).append("_");
+            stringBuilder.append(passKeeperObject.getLogin()).append("_");
+            stringBuilder.append(passKeeperObject.getPassword()).append("\\");
         }
         return stringBuilder.toString();
     }
