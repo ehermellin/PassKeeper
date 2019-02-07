@@ -20,13 +20,38 @@ public class PassKeeper implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * The status for logging PassKeeper.
+     */
+    private static boolean LOG = false;
+
+    /**
+     * Returns the status of the LOG.
+     *
+     * @return the status of the LOG.
+     */
+    public static boolean isLOG() {
+        return LOG;
+    }
+
+    /**
+     * Sets the status of the LOG in PassKeeper.
+     */
+    private static void setLOG() {
+        PassKeeper.LOG = true;
+    }
+
+    /**
      * Creates a new main GUI.
      */
     private PassKeeper(final String[] args) {
-        //TODO Exception + LOG
+        //TODO Exception and error output
         new MainFrame();
         if (args.length > 0 && args[0].equals("-LOG")) {
+            PassKeeper.setLOG();
             new LogFrame();
+            if (PassKeeper.isLOG()) {
+                System.out.println("[PassKeeper] Launches PassKeeper with LOG");
+            }
         }
     }
 

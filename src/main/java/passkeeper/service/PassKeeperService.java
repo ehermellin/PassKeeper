@@ -1,5 +1,6 @@
 package passkeeper.service;
 
+import passkeeper.PassKeeper;
 import passkeeper.model.PassKeeperModel;
 
 import java.io.Serializable;
@@ -41,7 +42,10 @@ public class PassKeeperService implements Serializable {
      * Creates a new PassKeeperService.
      */
     private PassKeeperService() {
-        passKeeperModel = new PassKeeperModel();
+        this.passKeeperModel = new PassKeeperModel();
+        if (PassKeeper.isLOG()) {
+            System.out.println("[PassKeeperService] Creates PasskeeperModel");
+        }
     }
 
     /**
@@ -50,25 +54,44 @@ public class PassKeeperService implements Serializable {
      * @return the instance of the PassKeeperService.
      */
     public static synchronized PassKeeperService getInstance() {
-        if (instance == null) {
-            instance = new PassKeeperService();
+        if (PassKeeperService.instance == null) {
+            if (PassKeeper.isLOG()) {
+                System.out.println("[PassKeeperService] Creates PassKeeperService");
+            }
+            PassKeeperService.instance = new PassKeeperService();
         }
-        return instance;
+        return PassKeeperService.instance;
     }
 
     /**
      * Loads the data from a String into the PassKeeperModel.
      */
     public synchronized void loadPassKeeperObjects(String data) {
+        this.clearPassKeeperModel();
+
         final String[] lines = data.split(";");
         if (lines.length % 3 == 0) {
-            System.out.println();
+            if (PassKeeper.isLOG()) {
+                System.out.println("[PassKeeperService] Loads data into data model (" + lines.length / 3 + " rows)");
+            }
             for (int i = 0; i < lines.length; i = i + 3) {
-                passKeeperModel.addRow(lines[i], lines[i + 1], lines[i + 2]);
+                this.passKeeperModel.addRow(lines[i], lines[i + 1], lines[i + 2]);
             }
         } else {
-            System.out.println();
+            if (PassKeeper.isLOG()) {
+                System.out.println("[PassKeeperService] Can't load data into data model (bad data format)");
+            }
         }
+    }
+
+    /**
+     * Clear the PassKeeperModel.
+     */
+    public void clearPassKeeperModel() {
+        if (PassKeeper.isLOG()) {
+            System.out.println("[PassKeeperService] Clears the PassKeeperModel");
+        }
+        this.passKeeperModel.clearModel();
     }
 
     /**
@@ -77,6 +100,9 @@ public class PassKeeperService implements Serializable {
      * @return a String version of the PassKeeperModel.
      */
     public String getPassKeeperModelToString() {
+        if (PassKeeper.isLOG()) {
+            System.out.println("[PassKeeperService] Gets data model as String");
+        }
         return this.passKeeperModel.toString();
     }
 }

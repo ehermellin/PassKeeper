@@ -1,4 +1,6 @@
-package passkeeper.gui.tools;
+package passkeeper.service;
+
+import passkeeper.PassKeeper;
 
 import java.awt.Component;
 import java.io.BufferedWriter;
@@ -20,7 +22,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author E. Hermellin
  * @version 1.0 - 05.02.2019
  */
-public class FileTools implements Serializable {
+public class FilesService implements Serializable {
 
     /**
      * The serial id of the class.
@@ -28,14 +30,34 @@ public class FileTools implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The last file path used.
+     * The instance of the service.
      */
-    private static File staticLastPath = new File(".");
+    private static FilesService instance;
 
     /**
-     * The file extension used for PassKeeper.
+     * The last file path used.
      */
-    private static FileNameExtensionFilter pKeeper = new FileNameExtensionFilter("PassKeeper file", "pkeeper");
+    private File staticLastPath = new File(".");
+
+    /**
+     * Creates a new FilesService.
+     */
+    private FilesService() {}
+
+    /**
+     * Returns the instance of the FilesService.
+     *
+     * @return the instance of the FilesService.
+     */
+    public static synchronized FilesService getInstance() {
+        if (FilesService.instance == null) {
+            if (PassKeeper.isLOG()) {
+                System.out.println("[FilesService] Creates FilesService");
+            }
+            FilesService.instance = new FilesService();
+        }
+        return FilesService.instance;
+    }
 
     /**
      * Returns a boolean. True if the file is not null, false otherwise.
@@ -43,30 +65,21 @@ public class FileTools implements Serializable {
      * @param file the file to check.
      * @return true if the file is not null, false otherwise.
      */
-    public static boolean checkFile(final File file) {
+    public boolean checkFile(final File file) {
         return (file != null);
     }
 
     /**
-     * Returns a String containing the name of the file without the extension.
-     *
-     * @param fileName the filename with the extension.
-     * @return the filename without the extension.
-     */
-    public static String removeExtension(final String fileName) {
-        return fileName.substring(0, fileName.lastIndexOf('.'));
-    }
-
-    /**
-     * Gets a list of file from a JFileChooser.
+     * Gets a file from a JFileChooser.
      *
      * @param component the swing component for JFileChooser.
      * @return a file.
      */
-    public static File getFile(Component component) {
+    public File getFile(final Component component) {
         final JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(staticLastPath);
-        fileChooser.setFileFilter(pKeeper);
+        fileChooser.setCurrentDirectory(this.staticLastPath);
+        fileChooser.setFileFilter(new FileNameExtensionFilter("PassKeeper file", "pkeeper"));
+        fileChooser.setSelectedFile(new File("save.pkeeper"));
 
         File openFile = null;
 
@@ -75,12 +88,19 @@ public class FileTools implements Serializable {
         if (option == JFileChooser.APPROVE_OPTION) {
             try {
                 openFile = fileChooser.getSelectedFile();
-                staticLastPath = openFile;
+                this.staticLastPath = openFile;
+
+                if (PassKeeper.isLOG()) {
+                    System.out.println("[FilesService] Getting .pkeeper file : " + openFile.getName());
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+        } else {
+            if (PassKeeper.isLOG()) {
+                System.out.println("[FilesService] Getting .pkeeper file canceled");
+            }
         }
-
         return openFile;
     }
 
@@ -90,10 +110,13 @@ public class FileTools implements Serializable {
      * @param file the file to read.
      * @return the content of the file as a String.
      */
-    public static String readFileToString(File file) {
+    public String readFileToString(final File file) {
         final StringBuilder fileContent = new StringBuilder();
         try {
-            Scanner scan = FileTools.readFileToScanner(file);
+            if (PassKeeper.isLOG()) {
+                System.out.println("[FilesService] Reading file " + file.getName());
+            }
+            Scanner scan = this.readFileToScanner(file);
             if (scan != null) {
                 while (scan.hasNext()) {
                     fileContent.append(scan.nextLine());
@@ -112,7 +135,7 @@ public class FileTools implements Serializable {
      * @param file the file to read.
      * @return a Scanner for a specified file.
      */
-    private static Scanner readFileToScanner(File file) {
+    private Scanner readFileToScanner(final File file) {
         try {
             return new Scanner(file, "UTF8");
         } catch (FileNotFoundException e) {
@@ -121,33 +144,7 @@ public class FileTools implements Serializable {
         }
     }
 
-    /**
-     * Creates a new file, with a JFileChooser, in a specified place with a specified extension.
-     *
-     * @param component the swing component for the JFileChooser.
-     * @return a new file with a specified place and extension.
-     */
-    public static File saveFile(Component component) {
-        final JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(staticLastPath);
 
-        File saveFile = null;
-
-        fileChooser.setSelectedFile(new File("password.pkeeper"));
-        fileChooser.setFileFilter(pKeeper);
-
-        int option = fileChooser.showSaveDialog(component);
-
-        if (option == JFileChooser.APPROVE_OPTION) {
-            try {
-                saveFile = fileChooser.getSelectedFile();
-                staticLastPath = saveFile;
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return saveFile;
-    }
 
     /**
      * Writes a content (String) in a specified file.
@@ -155,11 +152,14 @@ public class FileTools implements Serializable {
      * @param file   the file.
      * @param string the content to write.
      */
-    public static void writeInFile(File file, String string) {
+    public void writeInFile(final File file, final String string) {
         try {
             final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false),
                     StandardCharsets.UTF_8));
             try {
+                if (PassKeeper.isLOG()) {
+                    System.out.println("[FilesService] Writing file " + file.getName());
+                }
                 writer.write(string);
             } catch (IOException ioex) {
                 ioex.printStackTrace();

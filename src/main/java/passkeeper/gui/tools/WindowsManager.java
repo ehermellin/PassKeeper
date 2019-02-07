@@ -84,6 +84,7 @@ public class WindowsManager implements Serializable {
      * @return new location point.
      */
     public static Point setWindowsLocationWidth() {
-        return new Point((int) location.getX() + width + marging, (int) location.getY());
+        return new Point((int) WindowsManager.location.getX() + WindowsManager.width + WindowsManager.marging,
+                (int) WindowsManager.location.getY());
     }
 }

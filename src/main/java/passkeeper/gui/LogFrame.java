@@ -36,25 +36,25 @@ public class LogFrame extends JFrame {
     public LogFrame() {
         setLayout(null);
         setResizable(false);
-        setSize(WindowsManager.getWidth(), 140);
+        setSize(720, 220);
         setTitle(WindowsManager.NAME + " | LOG");
 
-        logArea = new JTextArea();
+        this.logArea = new JTextArea();
+        this.logArea.setEditable(false);
 
-        logArea.setEditable(false);
         final JScrollPane scrollTextPane = new JScrollPane(logArea);
-        scrollTextPane.setBounds(10, 10, 500, 80);
+        scrollTextPane.setBounds(10, 10, 640, 160);
         add(scrollTextPane);
 
         final JButton resetButton = new JButton(new ImageIcon("src/resources/icons/clear.png"));
-        resetButton.setBounds(520, 10, 50, 80);
+        resetButton.setBounds(660, 10, 50, 160);
         resetButton.setToolTipText("Clear the logs");
         resetButton.setEnabled(true);
-        resetButton.addActionListener(e -> logArea.setText(""));
+        resetButton.addActionListener(e -> this.logArea.setText(""));
         add(resetButton);
 
         try {
-            PrintStream printStream = new PrintStream(new CustomOutputStream(logArea), false, "UTF-8");
+            PrintStream printStream = new PrintStream(new CustomOutputStream(this.logArea), false, "UTF-8");
 
             // keeps reference of standard output stream
             //standardOut = System.out;

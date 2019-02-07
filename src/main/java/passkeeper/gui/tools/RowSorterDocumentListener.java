@@ -43,7 +43,7 @@ public class RowSorterDocumentListener implements DocumentListener {
      */
     @Override
     public void changedUpdate(DocumentEvent e) {
-        tableRowSorter.setRowFilter(RowFilter.regexFilter(jTextField.getText(), 0));
+        this.tableRowSorter.setRowFilter(RowFilter.regexFilter(jTextField.getText(), 0));
     }
 
     /**
@@ -52,7 +52,7 @@ public class RowSorterDocumentListener implements DocumentListener {
      */
     @Override
     public void insertUpdate(DocumentEvent e) {
-        tableRowSorter.setRowFilter(RowFilter.regexFilter(jTextField.getText(), 0));
+        this.tableRowSorter.setRowFilter(RowFilter.regexFilter(jTextField.getText(), 0));
     }
 
     /**
@@ -61,6 +61,6 @@ public class RowSorterDocumentListener implements DocumentListener {
      */
     @Override
     public void removeUpdate(DocumentEvent e) {
-        tableRowSorter.setRowFilter(RowFilter.regexFilter(jTextField.getText(), 0));
+        this.tableRowSorter.setRowFilter(RowFilter.regexFilter(jTextField.getText(), 0));
     }
 }

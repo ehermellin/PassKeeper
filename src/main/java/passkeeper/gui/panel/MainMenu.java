@@ -1,13 +1,14 @@
 package passkeeper.gui.panel;
 
-import passkeeper.gui.tools.FileTools;
 import passkeeper.gui.tools.WindowsManager;
 import passkeeper.service.CryptService;
+import passkeeper.service.FilesService;
 import passkeeper.service.PassKeeperService;
 
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -41,22 +42,21 @@ public class MainMenu extends JPanel {
         newItem.setIcon(new ImageIcon("src/resources/icons/new.png"));
         newItem.addActionListener(e -> {
             final PassKeeperService passKeeperService = PassKeeperService.getInstance();
-            passKeeperService.getPassKeeperModel().clearModel();
+            passKeeperService.clearPassKeeperModel();
         });
-        newItem.setBounds(10, 10, 100, 40);
+        newItem.setBounds(10, 10, 110, 40);
 
         final JButton loadItem = new JButton("Load");
         loadItem.setToolTipText("Decrypt and Load");
         loadItem.setIcon(new ImageIcon("src/resources/icons/load.png"));
         loadItem.addActionListener(e -> {
-            final File encryptedPasswordFile = FileTools.getFile(this);
-            if (FileTools.checkFile(encryptedPasswordFile)) {
+            final FilesService filesService = FilesService.getInstance();
+            final File encryptedPasswordFile = filesService.getFile(this);
+            if (filesService.checkFile(encryptedPasswordFile)) {
                 final CryptService cryptService = CryptService.getInstance();
                 try {
-                    System.out.println("text: " + FileTools.readFileToString(encryptedPasswordFile));
-                    final String decrypted = cryptService.decrypt(FileTools.readFileToString(encryptedPasswordFile));
+                    final String decrypted = cryptService.decrypt(filesService.readFileToString(encryptedPasswordFile));
                     if (!decrypted.equals("")) {
-                        System.out.println("text: " + decrypted);
                         final PassKeeperService passKeeperService = PassKeeperService.getInstance();
                         passKeeperService.loadPassKeeperObjects(decrypted);
                     }
@@ -65,39 +65,42 @@ public class MainMenu extends JPanel {
                 }
             }
         });
-        loadItem.setBounds(120, 10, 100, 40);
+        loadItem.setBounds(130, 10, 110, 40);
 
         final JButton saveItem = new JButton("Save");
         saveItem.setToolTipText("Encrypt and Save");
         saveItem.setIcon(new ImageIcon("src/resources/icons/save.png"));
         saveItem.addActionListener(e -> {
-            final File encryptedPasswordFile = FileTools.saveFile(this);
-            if (FileTools.checkFile(encryptedPasswordFile)) {
+            final FilesService filesService = FilesService.getInstance();
+            final File encryptedPasswordFile = filesService.getFile(this);
+            if (filesService.checkFile(encryptedPasswordFile)) {
                 final CryptService cryptService = CryptService.getInstance();
                 try {
                     PassKeeperService passKeeperService = PassKeeperService.getInstance();
-                    System.out.println("text: " + passKeeperService.getPassKeeperModelToString());
                     final String encrypted = cryptService.encrypt(passKeeperService.getPassKeeperModelToString());
                     if (!encrypted.equals("")) {
-                        System.out.println("text: " + encrypted);
-                        FileTools.writeInFile(encryptedPasswordFile, encrypted);
+                        filesService.writeInFile(encryptedPasswordFile, encrypted);
                     }
                 } catch (Exception exc) {
                     exc.printStackTrace();
                 }
             }
         });
-        saveItem.setBounds(230, 10, 100, 40);
+        saveItem.setBounds(250, 10, 110, 40);
 
-        final JButton helpItem = new JButton("Help");
-        helpItem.setIcon(new ImageIcon("src/resources/icons/help.png"));
-        helpItem.addActionListener(e -> System.out.println());
-        helpItem.setBounds(340, 10, 100, 40);
+        final JButton helpItem = new JButton("About");
+        helpItem.setIcon(new ImageIcon("src/resources/icons/about.png"));
+        helpItem.addActionListener(e -> {
+            final ImageIcon icon = new ImageIcon("src/resources/icons/lock.png");
+            JOptionPane.showMessageDialog(null, "PassKeeper v0.1",
+                    "About PassKeeper", JOptionPane.INFORMATION_MESSAGE, icon);
+        });
+        helpItem.setBounds(370, 10, 110, 40);
 
-        final JButton exitItem = new JButton("Exit");
+        final JButton exitItem = new JButton();
         exitItem.setIcon(new ImageIcon("src/resources/icons/exit.png"));
         exitItem.addActionListener(e -> System.exit(0));
-        exitItem.setBounds(450, 10, 100, 40);
+        exitItem.setBounds(490, 10, 60, 40);
 
         this.add(newItem);
         this.add(loadItem);

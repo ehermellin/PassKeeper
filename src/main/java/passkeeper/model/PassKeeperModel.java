@@ -28,11 +28,6 @@ public class PassKeeperModel extends AbstractTableModel {
     private Vector<PassKeeperObject> passKeeperObjects;
 
     /**
-     * Editable status of the model.
-     */
-    private boolean isEditable = true;
-
-    /**
      * Creates a new PassKeeperModel.
      */
     public PassKeeperModel() {
@@ -107,7 +102,7 @@ public class PassKeeperModel extends AbstractTableModel {
      */
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return this.isEditable;
+        return true;
     }
 
     /**
@@ -146,7 +141,7 @@ public class PassKeeperModel extends AbstractTableModel {
      * Clears the model.
      */
     public void clearModel() {
-        passKeeperObjects.clear();
+        this.passKeeperObjects.clear();
         fireTableDataChanged();
     }
 
@@ -156,7 +151,7 @@ public class PassKeeperModel extends AbstractTableModel {
      * @param rowIndex the row index.
      */
     public void removeRow(int rowIndex) {
-        passKeeperObjects.removeElementAt(rowIndex);
+        this.passKeeperObjects.removeElementAt(rowIndex);
         fireTableDataChanged();
     }
 
@@ -164,7 +159,7 @@ public class PassKeeperModel extends AbstractTableModel {
      * Adds a default row in the model.
      */
     public void addRow() {
-        passKeeperObjects.add(new PassKeeperObject());
+        this.passKeeperObjects.add(new PassKeeperObject());
         fireTableDataChanged();
     }
 
@@ -175,7 +170,7 @@ public class PassKeeperModel extends AbstractTableModel {
      * @param password the password.
      */
     public void addRow(final String id, final String login, final String password) {
-        passKeeperObjects.add(new PassKeeperObject(id, login, password));
+        this.passKeeperObjects.add(new PassKeeperObject(id, login, password));
         fireTableDataChanged();
     }
 
@@ -186,7 +181,7 @@ public class PassKeeperModel extends AbstractTableModel {
      */
     public String toString() {
         final StringBuilder stringBuilder = new StringBuilder();
-        for (PassKeeperObject passKeeperObject : passKeeperObjects) {
+        for (PassKeeperObject passKeeperObject : this.passKeeperObjects) {
             stringBuilder.append(passKeeperObject.getId()).append(";");
             stringBuilder.append(passKeeperObject.getLogin()).append(";");
             stringBuilder.append(passKeeperObject.getPassword()).append(";");

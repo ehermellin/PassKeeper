@@ -1,5 +1,7 @@
 package passkeeper.service;
 
+import passkeeper.PassKeeper;
+
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -59,6 +61,9 @@ public class CryptService implements Serializable {
      */
     public static synchronized CryptService getInstance() {
         if (CryptService.instance == null) {
+            if (PassKeeper.isLOG()) {
+                System.out.println("[CryptService] Creates CryptService");
+            }
             CryptService.instance = new CryptService();
         }
         return CryptService.instance;
@@ -90,9 +95,15 @@ public class CryptService implements Serializable {
                 JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, options, options[1]);
         if (option == 0) {
+            if (PassKeeper.isLOG()) {
+                System.out.println("[CryptService] Asks password succeed");
+            }
             char[] password = pass.getPassword();
             return new String(password).trim();
         } else {
+            if (PassKeeper.isLOG()) {
+                System.out.println("[CryptService] Asks password failed");
+            }
             return "";
         }
     }
@@ -114,20 +125,28 @@ public class CryptService implements Serializable {
         //Key generation for enc and desc
         final String password = this.askPassword();
         if (!password.equals("")) {
-            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterationCount);
+            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), this.salt, this.iterationCount);
             SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
             // Prepare the parameter to the ciphers
-            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
+            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(this.salt, this.iterationCount);
 
             //Enc process
             Cipher ecipher = Cipher.getInstance(key.getAlgorithm());
             ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
             byte[] in = plainText.getBytes(StandardCharsets.UTF_8);
             byte[] out = ecipher.doFinal(in);
-            return new String(Base64.getEncoder().encode(out), StandardCharsets.UTF_8);
+            final String outString = new String(Base64.getEncoder().encode(out), StandardCharsets.UTF_8);
+            if (PassKeeper.isLOG()) {
+                System.out.println("[CryptService] Crypting: " + plainText.trim());
+                System.out.println("[CryptService] Crypted text: " + outString.trim());
+            }
+            return outString;
+        } else {
+            if (PassKeeper.isLOG()) {
+                System.out.println("[CryptService] Can't crypt because asking passwork failed");
+            }
+            return "";
         }
-
-        return "";
     }
 
     /**
@@ -147,17 +166,27 @@ public class CryptService implements Serializable {
         //Key generation for enc and desc
         final String password = this.askPassword();
         if (!password.equals("")) {
-            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterationCount);
+            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), this.salt, this.iterationCount);
             SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
             // Prepare the parameter to the ciphers
-            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
+            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(this.salt, this.iterationCount);
             //Decryption process; same key will be used for decr
             Cipher dcipher = Cipher.getInstance(key.getAlgorithm());
             dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
-            byte[] enc = Base64.getMimeDecoder().decode(encryptedText.trim());
-            byte[] utf8 = dcipher.doFinal(enc);
-            return new String(utf8, StandardCharsets.UTF_8);
+            byte[] in = Base64.getMimeDecoder().decode(encryptedText.trim());
+            byte[] out = dcipher.doFinal(in);
+            final String outString = new String(out, StandardCharsets.UTF_8);
+
+            if (PassKeeper.isLOG()) {
+                System.out.println("[CryptService] Decrypting: " + encryptedText.trim());
+                System.out.println("[CryptService] Decrypted text: " + outString.trim());
+            }
+            return outString;
+        } else {
+            if (PassKeeper.isLOG()) {
+                System.out.println("[CryptService] Can't decrypt because asking passwork failed");
+            }
+            return "";
         }
-        return "";
     }
 }

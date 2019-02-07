@@ -38,8 +38,8 @@ public class CustomOutputStream extends OutputStream implements Serializable {
     @Override
     public void write(int b) {
         // redirects data to the text area
-        textArea.append(String.valueOf((char)b));
+        this.textArea.append(String.valueOf((char)b));
         // scrolls the text area to the end of data
-        textArea.setCaretPosition(textArea.getDocument().getLength());
+        this.textArea.setCaretPosition(textArea.getDocument().getLength());
     }
 }
