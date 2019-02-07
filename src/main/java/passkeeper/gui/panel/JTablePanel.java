@@ -1,5 +1,6 @@
 package passkeeper.gui.panel;
 
+import passkeeper.gui.tools.RowSorterDocumentListener;
 import passkeeper.gui.tools.WindowsManager;
 import passkeeper.model.PassKeeperModel;
 import passkeeper.service.PassKeeperService;
@@ -10,9 +11,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.RowFilter;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.TableRowSorter;
 
 /**
@@ -71,20 +69,7 @@ public class JTablePanel extends JPanel {
 
         final JTextField filterText = new JTextField();
         filterText.setBounds(100, 380, 450, 20);
-        filterText.getDocument().addDocumentListener(
-            new DocumentListener() {
-                public void changedUpdate(DocumentEvent e) {
-                    tableRowSorter.setRowFilter(RowFilter.regexFilter(filterText.getText(), 0));
-                }
-
-                public void insertUpdate(DocumentEvent e) {
-                    tableRowSorter.setRowFilter(RowFilter.regexFilter(filterText.getText(), 0));
-                }
-
-                public void removeUpdate(DocumentEvent e) {
-                    tableRowSorter.setRowFilter(RowFilter.regexFilter(filterText.getText(), 0));
-                }
-            });
+        filterText.getDocument().addDocumentListener(new RowSorterDocumentListener(filterText, tableRowSorter));
         this.add(addItem);
         this.add(removeItem);
         this.add(filterLabel);

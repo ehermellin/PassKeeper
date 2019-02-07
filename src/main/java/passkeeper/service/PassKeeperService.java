@@ -60,10 +60,14 @@ public class PassKeeperService implements Serializable {
      * Loads the data from a String into the PassKeeperModel.
      */
     public synchronized void loadPassKeeperObjects(String data) {
-        final String[] lines = data.split("_");
-        for (String line : lines) {
-            final String[] args = line.split(";");
-            passKeeperModel.addRow(args[0], args[1], args[2]);
+        final String[] lines = data.split(";");
+        if (lines.length % 3 == 0) {
+            System.out.println();
+            for (int i = 0; i < lines.length; i = i + 3) {
+                passKeeperModel.addRow(lines[i], lines[i + 1], lines[i + 2]);
+            }
+        } else {
+            System.out.println();
         }
     }
 

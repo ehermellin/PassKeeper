@@ -28,6 +28,7 @@ public class MainFrame extends JFrame {
         setResizable(false);
         setSize(WindowsManager.getWidth(), WindowsManager.getHeight());
         setTitle(WindowsManager.NAME + " | password Reminder");
+        WindowsManager.setPoint(this.getLocation());
 
         final MainMenu mainMenu = new MainMenu();
         mainMenu.setBounds(WindowsManager.getMarging(), WindowsManager.getMarging(),

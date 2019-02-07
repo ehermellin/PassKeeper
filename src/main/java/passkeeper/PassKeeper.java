@@ -1,6 +1,7 @@
 package passkeeper;
 
 import com.pagosoft.plaf.PlafOptions;
+import passkeeper.gui.LogFrame;
 import passkeeper.gui.MainFrame;
 
 import java.io.Serializable;
@@ -21,9 +22,12 @@ public class PassKeeper implements Serializable {
     /**
      * Creates a new main GUI.
      */
-    private PassKeeper() {
-        //TODO Hide/show password in pane + add retype your password, Exception, Cryptage
+    private PassKeeper(final String[] args) {
+        //TODO Exception + LOG
         new MainFrame();
+        if (args.length > 0 && args[0].equals("-LOG")) {
+            new LogFrame();
+        }
     }
 
     /**
@@ -35,6 +39,6 @@ public class PassKeeper implements Serializable {
         PlafOptions.setAsLookAndFeel();
         PlafOptions.updateAllUIs();
 
-        new PassKeeper();
+        new PassKeeper(args);
     }
 }

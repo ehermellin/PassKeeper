@@ -1,8 +1,6 @@
 package passkeeper.service;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -19,7 +17,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-import javax.swing.JLabel;
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -71,18 +69,29 @@ public class CryptService implements Serializable {
      *
      * @return the password as a String.
      */
-    public String askPassword() {
+    private String askPassword() {
         final JPanel panel = new JPanel();
         final JPasswordField pass = new JPasswordField(16);
-        panel.add(new JLabel("Enter your password: "));
+        pass.setEchoChar('-');
+        final JCheckBox checkBox = new JCheckBox("Show/Hide");
+        checkBox.setSelected(false);
+        checkBox.addItemListener(e -> {
+            if (checkBox.isSelected()) {
+                pass.setEchoChar((char) 0);
+            } else {
+                pass.setEchoChar('-');
+            }
+        });
         panel.add(pass);
-        String[] options = new String[]{"OK", "Cancel"};
-        int option = JOptionPane.showOptionDialog(null, panel, "Password needed!",
+        panel.add(checkBox);
+
+        final String[] options = new String[]{"OK", "Cancel"};
+        final int option = JOptionPane.showOptionDialog(null, panel, "Enter your password:",
                 JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, options, options[1]);
         if (option == 0) {
             char[] password = pass.getPassword();
-            return new String(password);
+            return new String(password).trim();
         } else {
             return "";
         }
@@ -91,11 +100,10 @@ public class CryptService implements Serializable {
     /**
      * Returns a encrypted String from a plain String.
      *
-     * @param secretKey the key used to encrypt data.
      * @param plainText the input test to be encrypted.
      * @return returns an encrypted text.
      */
-    public String encrypt(String secretKey, String plainText)
+    public String encrypt(String plainText)
             throws NoSuchAlgorithmException,
             InvalidKeySpecException,
             NoSuchPaddingException,
@@ -104,27 +112,31 @@ public class CryptService implements Serializable {
             IllegalBlockSizeException,
             BadPaddingException {
         //Key generation for enc and desc
-        KeySpec keySpec = new PBEKeySpec(secretKey.toCharArray(), salt, iterationCount);
-        SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-        // Prepare the parameter to the ciphers
-        AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
+        final String password = this.askPassword();
+        if (!password.equals("")) {
+            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterationCount);
+            SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
+            // Prepare the parameter to the ciphers
+            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
 
-        //Enc process
-        Cipher ecipher = Cipher.getInstance(key.getAlgorithm());
-        ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
-        byte[] in = plainText.getBytes(StandardCharsets.UTF_8);
-        byte[] out = ecipher.doFinal(in);
-        return new String(Base64.getEncoder().encode(out), StandardCharsets.UTF_8);
+            //Enc process
+            Cipher ecipher = Cipher.getInstance(key.getAlgorithm());
+            ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
+            byte[] in = plainText.getBytes(StandardCharsets.UTF_8);
+            byte[] out = ecipher.doFinal(in);
+            return new String(Base64.getEncoder().encode(out), StandardCharsets.UTF_8);
+        }
+
+        return "";
     }
 
     /**
      * Returns a decrypted String from an encrypted String.
      *
-     * @param secretKey     the key used to decrypt data.
      * @param encryptedText the encrypted input text to decrypt.
      * @return the decrypted String.
      */
-    public String decrypt(String secretKey, String encryptedText)
+    public String decrypt(String encryptedText)
             throws NoSuchAlgorithmException,
             InvalidKeySpecException,
             NoSuchPaddingException,
@@ -133,15 +145,19 @@ public class CryptService implements Serializable {
             IllegalBlockSizeException,
             BadPaddingException {
         //Key generation for enc and desc
-        KeySpec keySpec = new PBEKeySpec(secretKey.toCharArray(), salt, iterationCount);
-        SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-        // Prepare the parameter to the ciphers
-        AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
-        //Decryption process; same key will be used for decr
-        Cipher dcipher = Cipher.getInstance(key.getAlgorithm());
-        dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
-        byte[] enc = Base64.getMimeDecoder().decode(encryptedText.trim());
-        byte[] utf8 = dcipher.doFinal(enc);
-        return new String(utf8, StandardCharsets.UTF_8);
+        final String password = this.askPassword();
+        if (!password.equals("")) {
+            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterationCount);
+            SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
+            // Prepare the parameter to the ciphers
+            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(salt, iterationCount);
+            //Decryption process; same key will be used for decr
+            Cipher dcipher = Cipher.getInstance(key.getAlgorithm());
+            dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
+            byte[] enc = Base64.getMimeDecoder().decode(encryptedText.trim());
+            byte[] utf8 = dcipher.doFinal(enc);
+            return new String(utf8, StandardCharsets.UTF_8);
+        }
+        return "";
     }
 }

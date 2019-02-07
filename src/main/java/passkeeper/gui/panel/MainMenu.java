@@ -54,10 +54,9 @@ public class MainMenu extends JPanel {
                 final CryptService cryptService = CryptService.getInstance();
                 try {
                     System.out.println("text: " + FileTools.readFileToString(encryptedPasswordFile));
-                    final String decrypted = cryptService.decrypt(cryptService.askPassword(),
-                            FileTools.readFileToString(encryptedPasswordFile));
-                    System.out.println("text: " + decrypted);
+                    final String decrypted = cryptService.decrypt(FileTools.readFileToString(encryptedPasswordFile));
                     if (!decrypted.equals("")) {
+                        System.out.println("text: " + decrypted);
                         final PassKeeperService passKeeperService = PassKeeperService.getInstance();
                         passKeeperService.loadPassKeeperObjects(decrypted);
                     }
@@ -78,10 +77,11 @@ public class MainMenu extends JPanel {
                 try {
                     PassKeeperService passKeeperService = PassKeeperService.getInstance();
                     System.out.println("text: " + passKeeperService.getPassKeeperModelToString());
-                    final String encrypted = cryptService.encrypt(cryptService.askPassword(),
-                            passKeeperService.getPassKeeperModelToString());
-                    System.out.println("text: " + encrypted);
-                    FileTools.writeInFile(encryptedPasswordFile, encrypted);
+                    final String encrypted = cryptService.encrypt(passKeeperService.getPassKeeperModelToString());
+                    if (!encrypted.equals("")) {
+                        System.out.println("text: " + encrypted);
+                        FileTools.writeInFile(encryptedPasswordFile, encrypted);
+                    }
                 } catch (Exception exc) {
                     exc.printStackTrace();
                 }
@@ -91,7 +91,7 @@ public class MainMenu extends JPanel {
 
         final JButton helpItem = new JButton("Help");
         helpItem.setIcon(new ImageIcon("src/resources/icons/help.png"));
-        helpItem.addActionListener(e -> {});
+        helpItem.addActionListener(e -> System.out.println());
         helpItem.setBounds(340, 10, 100, 40);
 
         final JButton exitItem = new JButton("Exit");

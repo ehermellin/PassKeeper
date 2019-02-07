@@ -1,5 +1,6 @@
 package passkeeper.gui.tools;
 
+import java.awt.Point;
 import java.io.Serializable;
 
 /**
@@ -15,6 +16,11 @@ public class WindowsManager implements Serializable {
      * The serial id of the class.
      */
     private static final long serialVersionUID = 1L;
+
+    /**
+     * The origin point of Passkeeper.
+     */
+    private static Point location;
 
     /**
      * The width of PassKeeper main frame.
@@ -35,6 +41,15 @@ public class WindowsManager implements Serializable {
      * The title of PassKeeper main frame.
      */
     public static final String NAME = "PassKeeper";
+
+    /**
+     * Sets the origin point of PassKeeper.
+     *
+     * @param location the origin point of PassKeeper.
+     */
+    public static void setPoint(Point location) {
+        WindowsManager.location = location;
+    }
 
     /**
      * Gets the width of PassKeeper main frame.
@@ -61,5 +76,14 @@ public class WindowsManager implements Serializable {
      */
     public static int getMarging() {
         return WindowsManager.marging;
+    }
+
+    /**
+     * Return new location for windows according to location point, width parameter and margin.
+     *
+     * @return new location point.
+     */
+    public static Point setWindowsLocationWidth() {
+        return new Point((int) location.getX() + width + marging, (int) location.getY());
     }
 }

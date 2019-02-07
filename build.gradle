@@ -40,6 +40,11 @@ jar {
 }
 
 task run (type: JavaExec, dependsOn: build){
+    if (project.hasProperty("Args")) {
+        println("arguments list : " + Args)
+        args(Args.split(','))
+    }
+    
     description = "Run PassKeeper"
     main = "passkeeper.PassKeeper"
     classpath = sourceSets.main.runtimeClasspath
