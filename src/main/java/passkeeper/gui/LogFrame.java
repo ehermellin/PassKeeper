@@ -63,7 +63,7 @@ public class LogFrame extends JFrame {
             System.setOut(printStream);
             System.setErr(printStream);
         } catch (UnsupportedEncodingException unex) {
-            unex.printStackTrace();
+            System.err.println(unex.getMessage());
         }
 
         setLocation(WindowsManager.setWindowsLocationWidth());

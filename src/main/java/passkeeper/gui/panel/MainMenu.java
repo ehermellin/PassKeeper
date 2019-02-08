@@ -61,7 +61,7 @@ public class MainMenu extends JPanel {
                         passKeeperService.loadPassKeeperObjects(decrypted);
                     }
                 } catch (Exception exc) {
-                    exc.printStackTrace();
+                    System.err.println(exc.getMessage());
                 }
             }
         });
@@ -82,7 +82,7 @@ public class MainMenu extends JPanel {
                         filesService.writeInFile(encryptedPasswordFile, encrypted);
                     }
                 } catch (Exception exc) {
-                    exc.printStackTrace();
+                    System.err.println(exc.getMessage());
                 }
             }
         });

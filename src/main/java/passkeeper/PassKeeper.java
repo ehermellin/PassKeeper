@@ -44,7 +44,7 @@ public class PassKeeper implements Serializable {
      * Creates a new main GUI.
      */
     private PassKeeper(final String[] args) {
-        //TODO Exception and error output
+        //TODO Exception
         new MainFrame();
         if (args.length > 0 && args[0].equals("-LOG")) {
             PassKeeper.setLOG();

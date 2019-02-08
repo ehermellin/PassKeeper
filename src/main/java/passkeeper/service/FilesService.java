@@ -94,7 +94,7 @@ public class FilesService implements Serializable {
                     System.out.println("[FilesService] Getting .pkeeper file : " + openFile.getName());
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                System.err.println(ex.getMessage());
             }
         } else {
             if (PassKeeper.isLOG()) {
@@ -124,7 +124,7 @@ public class FilesService implements Serializable {
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.err.println(ex.getMessage());
         }
         return fileContent.toString();
     }
@@ -139,7 +139,7 @@ public class FilesService implements Serializable {
         try {
             return new Scanner(file, "UTF8");
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
             return null;
         }
     }
@@ -162,12 +162,12 @@ public class FilesService implements Serializable {
                 }
                 writer.write(string);
             } catch (IOException ioex) {
-                ioex.printStackTrace();
+                System.err.println(ioex.getMessage());
             } finally {
                 writer.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 }
