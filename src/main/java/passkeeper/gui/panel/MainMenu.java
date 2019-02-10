@@ -79,7 +79,8 @@ public class MainMenu extends JPanel {
                     PassKeeperService passKeeperService = PassKeeperService.getInstance();
                     final String encrypted = cryptService.encrypt(passKeeperService.getPassKeeperModelToString());
                     if (!encrypted.equals("")) {
-                        filesService.writeInFile(encryptedPasswordFile, encrypted);
+                        filesService.writeInFile(encryptedPasswordFile, cryptService.getIterationCount()
+                                + " " + encrypted);
                     }
                 } catch (Exception exc) {
                     System.err.println(exc.getMessage());

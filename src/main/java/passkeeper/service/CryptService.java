@@ -11,6 +11,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -47,7 +48,28 @@ public class CryptService implements Serializable {
     /**
      * The iteration count for key generation.
      */
-    private int iterationCount = 19;
+    private int iterationCount = ThreadLocalRandom.current().nextInt(18, 40);
+
+    /**
+     * Gets the iteration count parameter used to encrypt data.
+     *
+     * @return the iteration count parameter.
+     */
+    public int getIterationCount() {
+        if (PassKeeper.isLOG()) {
+            System.out.println("[CryptService] Iteration count : " + this.iterationCount);
+        }
+        return this.iterationCount;
+    }
+
+    /**
+     * Sets the iteration count parameter.
+     *
+     * @param iterationCount the iteration count parameter.
+     */
+    private void setIterationCount(int iterationCount) {
+        this.iterationCount = iterationCount;
+    }
 
     /**
      * Creates a new CryptService.
@@ -166,22 +188,35 @@ public class CryptService implements Serializable {
         //Key generation for enc and desc
         final String password = this.askPassword();
         if (!password.equals("")) {
-            KeySpec keySpec = new PBEKeySpec(password.toCharArray(), this.salt, this.iterationCount);
-            SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
-            // Prepare the parameter to the ciphers
-            AlgorithmParameterSpec paramSpec = new PBEParameterSpec(this.salt, this.iterationCount);
-            //Decryption process; same key will be used for decr
-            Cipher dcipher = Cipher.getInstance(key.getAlgorithm());
-            dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
-            byte[] in = Base64.getMimeDecoder().decode(encryptedText.trim());
-            byte[] out = dcipher.doFinal(in);
-            final String outString = new String(out, StandardCharsets.UTF_8);
+            final String iteration = encryptedText.substring(0, encryptedText.indexOf(' '));
+            final String data = encryptedText.substring(encryptedText.indexOf(' ') + 1);
 
-            if (PassKeeper.isLOG()) {
-                System.out.println("[CryptService] Decrypting: " + encryptedText.trim());
-                System.out.println("[CryptService] Decrypted text: " + outString.trim());
+            if (!iteration.equals("") && !data.equals("")) {
+                this.setIterationCount(Integer.parseInt(iteration.trim()));
+
+                KeySpec keySpec = new PBEKeySpec(password.toCharArray(), this.salt, this.iterationCount);
+                SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
+                // Prepare the parameter to the ciphers
+                AlgorithmParameterSpec paramSpec = new PBEParameterSpec(this.salt, this.iterationCount);
+                //Decryption process; same key will be used for decr
+                Cipher dcipher = Cipher.getInstance(key.getAlgorithm());
+                dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
+                byte[] in = Base64.getMimeDecoder().decode(data.trim());
+                byte[] out = dcipher.doFinal(in);
+                final String outString = new String(out, StandardCharsets.UTF_8);
+
+                if (PassKeeper.isLOG()) {
+                    System.out.println("[CryptService] Iteration count: " + iteration.trim());
+                    System.out.println("[CryptService] Decrypting: " + data.trim());
+                    System.out.println("[CryptService] Decrypted text: " + outString.trim());
+                }
+                return outString;
+            } else {
+                if (PassKeeper.isLOG()) {
+                    System.out.println("[CryptService] Error in encrypted data");
+                }
+                return "";
             }
-            return outString;
         } else {
             if (PassKeeper.isLOG()) {
                 System.out.println("[CryptService] Can't decrypt because asking passwork failed");
