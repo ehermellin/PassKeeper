@@ -7,10 +7,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -40,10 +42,7 @@ public class CryptService implements Serializable {
     /**
      * 8-byte Salt for key generation.
      */
-    private byte[] salt = {
-        (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32,
-        (byte) 0x56, (byte) 0x35, (byte) 0xE3, (byte) 0x03
-    };
+    private byte[] salt = getRandomSalt();
 
     /**
      * The iteration count for key generation.
@@ -72,9 +71,43 @@ public class CryptService implements Serializable {
     }
 
     /**
+     * Returns the salt for key generation as Base64 String.
+     *
+     * @return the salt for key generation as Base64 String.
+     */
+    public String getSalt() {
+        final String saltString = new String(Base64.getEncoder().encode(this.salt), StandardCharsets.UTF_8);
+        if (PassKeeper.isLOG()) {
+            System.out.println("[CryptService] Salt : " + saltString);
+        }
+        return saltString;
+    }
+
+    /**
+     * Sets the salt for key generation.
+     *
+     * @param salt the salt for key generation.
+     */
+    private void setSalt(byte[] salt) {
+        this.salt = salt;
+    }
+
+    /**
      * Creates a new CryptService.
      */
     private CryptService() {}
+
+    /**
+     * Generates a random salt for key generation.
+     *
+     * @return a random salt for key generation.
+     */
+    private byte[] getRandomSalt() {
+        final Random random = new SecureRandom();
+        byte[] salt = new byte[8];
+        random.nextBytes(salt);
+        return salt;
+    }
 
     /**
      * Returns the instance of the CryptService.
@@ -188,11 +221,14 @@ public class CryptService implements Serializable {
         //Key generation for enc and desc
         final String password = this.askPassword();
         if (!password.equals("")) {
-            final String iteration = encryptedText.substring(0, encryptedText.indexOf(' '));
-            final String data = encryptedText.substring(encryptedText.indexOf(' ') + 1);
+            final String[] rawData = encryptedText.split(" ");
+            final String iteration = rawData[0].trim();
+            final String salt = rawData[1].trim();
+            final String data = rawData[2].trim();
 
-            if (!iteration.equals("") && !data.equals("")) {
+            if (!iteration.equals("") && !salt.equals("") && !data.equals("")) {
                 this.setIterationCount(Integer.parseInt(iteration.trim()));
+                this.setSalt(Base64.getMimeDecoder().decode(salt.trim()));
 
                 KeySpec keySpec = new PBEKeySpec(password.toCharArray(), this.salt, this.iterationCount);
                 SecretKey key = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(keySpec);
@@ -206,6 +242,7 @@ public class CryptService implements Serializable {
                 final String outString = new String(out, StandardCharsets.UTF_8);
 
                 if (PassKeeper.isLOG()) {
+                    System.out.println("[CryptService] Salt: " + salt.trim());
                     System.out.println("[CryptService] Iteration count: " + iteration.trim());
                     System.out.println("[CryptService] Decrypting: " + data.trim());
                     System.out.println("[CryptService] Decrypted text: " + outString.trim());

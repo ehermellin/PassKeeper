@@ -80,7 +80,7 @@ public class MainMenu extends JPanel {
                     final String encrypted = cryptService.encrypt(passKeeperService.getPassKeeperModelToString());
                     if (!encrypted.equals("")) {
                         filesService.writeInFile(encryptedPasswordFile, cryptService.getIterationCount()
-                                + " " + encrypted);
+                                + " " + cryptService.getSalt() + " " + encrypted);
                     }
                 } catch (Exception exc) {
                     System.err.println(exc.getMessage());
